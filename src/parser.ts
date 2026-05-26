@@ -1,8 +1,83 @@
-import { FamilyMember, Person } from "./types";
+import { Address, FamilyMember, Person, Phone } from "./types";
+
+type RecordType = "P" | "T" | "A" | "F";
+
+function isRecordType(value: string): value is RecordType {
+  return value === "P" || value === "T" || value === "A" || value === "F";
+}
+
+function validateFieldCount(values: string[], maxLength: number, recordType: RecordType): void {
+  if (values.length > maxLength) {
+    throw new Error(`Invalid ${recordType} record: too many fields`);
+  }
+}
+
+function toOptionalFields(values: string[]): Array<string | undefined> {
+  return values.map((value) => {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  });
+}
+
+function buildPhone(values: string[]): Phone | undefined {
+  const [mobile, landline] = toOptionalFields(values);
+  const phone: Phone = {};
+
+  if (mobile) {
+    phone.mobile = mobile;
+  }
+
+  if (landline) {
+    phone.landline = landline;
+  }
+
+  return Object.keys(phone).length > 0 ? phone : undefined;
+}
+
+function buildAddress(values: string[]): Address | undefined {
+  const [street, city, zipcode] = toOptionalFields(values);
+  const address: Address = {};
+
+  if (street) {
+    address.street = street;
+  }
+
+  if (city) {
+    address.city = city;
+  }
+
+  if (zipcode) {
+    address.zipcode = zipcode;
+  }
+
+  return Object.keys(address).length > 0 ? address : undefined;
+}
+
+function buildFamily(values: string[]): FamilyMember | undefined {
+  const [name, born] = toOptionalFields(values);
+
+  if (!name && !born) {
+    return undefined;
+  }
+
+  return {
+    name,
+    born,
+  };
+}
+
+function buildPerson(values: string[]): Person {
+  const [firstname, lastname] = toOptionalFields(values);
+  return {
+    firstname,
+    lastname,
+    family: [],
+  };
+}
 
 export function parseInput(input: string): Person[] {
   const lines = input
-    .split("\n")
+    .split(/\r?\n/)
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
 
@@ -11,43 +86,76 @@ export function parseInput(input: string): Person[] {
   let currentFamily: FamilyMember | null = null;
 
   for (const line of lines) {
-    const [type, ...values] = line.split("|");
+    const [rawType, ...rawValues] = line.split("|");
+    const type = rawType?.trim();
+    const values = rawValues.map((value) => value.trim());
+
+    if (!type || !isRecordType(type)) {
+      throw new Error(`Unsupported record type: ${type ?? ""}`);
+    }
 
     switch (type) {
-      case "P":
-        currentPerson = {
-          firstname: values[0],
-          lastname: values[1],
-          family: [],
-        };
-        people.push(currentPerson);
+      case "P": {
+        validateFieldCount(values, 2, type);
+        const person = buildPerson(values);
+        currentPerson = person;
         currentFamily = null;
+        people.push(person);
         break;
+      }
 
-      case "F":
-        if (!currentPerson) break;
-        currentFamily = {
-          name: values[0],
-          born: values[1],
-        };
-        currentPerson.family.push(currentFamily);
-        break;
+      case "F": {
+        validateFieldCount(values, 2, type);
+        const family = buildFamily(values);
 
-      case "T":
-        const phone = { mobile: values[0], landline: values[1] };
-        if (currentFamily) currentFamily.phone = phone;
-        else if (currentPerson) currentPerson.phone = phone;
-        break;
+        if (!family) {
+          break;
+        }
 
-      case "A":
-        const address = {
-          street: values[0],
-          city: values[1],
-          zipcode: values[2],
-        };
-        if (currentFamily) currentFamily.address = address;
-        else if (currentPerson) currentPerson.address = address;
+        if (!currentPerson) {
+          throw new Error("Invalid F record: missing parent person");
+        }
+
+        currentFamily = family;
+        currentPerson.family.push(family);
         break;
+      }
+
+      case "T": {
+        validateFieldCount(values, 2, type);
+        const phone = buildPhone(values);
+
+        if (!phone) {
+          break;
+        }
+
+        if (currentFamily) {
+          currentFamily.phone = phone;
+        } else if (currentPerson) {
+          currentPerson.phone = phone;
+        } else {
+          throw new Error("Invalid T record: missing parent person");
+        }
+        break;
+      }
+
+      case "A": {
+        validateFieldCount(values, 3, type);
+        const address = buildAddress(values);
+
+        if (!address) {
+          break;
+        }
+
+        if (currentFamily) {
+          currentFamily.address = address;
+        } else if (currentPerson) {
+          currentPerson.address = address;
+        } else {
+          throw new Error("Invalid A record: missing parent person");
+        }
+        break;
+      }
     }
   }
 

@@ -4,10 +4,12 @@
   "scripts": {
     "start": "npx tsx src/converter.ts",
     "build": "npx tsc --outDir dist",
-    "typecheck": "npx tsc --noEmit"
+    "typecheck": "npx tsc --noEmit",
+    "test": "node --import tsx --test"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
-    "prettier": "^3.8.3"
+    "prettier": "^3.8.3",
+    "tsx": "^4.20.3"
   }
 }

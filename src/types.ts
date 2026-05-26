@@ -1,24 +1,24 @@
 export interface Address {
-  street?: string;
-  city?: string;
-  zipcode?: string;
+  street?: string | undefined;
+  city?: string | undefined;
+  zipcode?: string | undefined;
 }
 
 export interface Phone {
-  mobile?: string;
-  landline?: string;
+  mobile?: string | undefined;
+  landline?: string | undefined;
 }
 
 export interface FamilyMember {
-  name?: string;
-  born?: string;
+  name?: string | undefined;
+  born?: string | undefined;
   phone?: Phone;
   address?: Address;
 }
 
 export interface Person {
-  firstname?: string;
-  lastname?: string;
+  firstname?: string | undefined;
+  lastname?: string | undefined;
   phone?: Phone;
   address?: Address;
   family: FamilyMember[];

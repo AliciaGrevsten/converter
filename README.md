@@ -26,10 +26,14 @@ The converter will use the provided file path and always write the XML output to
 
 ## Supported records
 
-- `P|firstname|lastname`
-- `T|mobile|landline`
-- `A|street|city|zipcode`
-- `F|name|birthyear`
+The parser accepts pipe-delimited records, and **no fields are required**.
+
+- `P` can be followed by zero, one, or two values for `firstname` and `lastname`
+- `T` can be followed by zero, one, or two values for `mobile` and `landline`
+- `A` can be followed by zero, one, two, or three values for `street`, `city`, and `zipcode`
+- `F` can be followed by zero, one, or two values for `name` and `born`
+- Unknown record types are rejected
+- Empty records are ignored
 
 ## Sample files
 
