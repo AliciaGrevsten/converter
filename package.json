@@ -1,0 +1,12 @@
+{
+  "name": "converter",
+  "private": true,
+  "scripts": {
+    "start": "npx tsx src/converter.ts",
+    "build": "npx tsc --outDir dist",
+    "typecheck": "npx tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1"
+  }
+}
