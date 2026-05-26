@@ -16,21 +16,23 @@ export function parseInput(input: string): Person[] {
     }
 
     switch (type) {
-      case "P": {
+      case "P":
         currentPerson = buildPerson(values);
         currentFamily = undefined;
         people.push(currentPerson);
         break;
-      }
 
       case "F": {
         const family = buildFamily(values);
+
         if (!family) {
           break;
         }
+
         if (!currentPerson) {
           throw new Error("Invalid F record: missing parent person");
         }
+
         currentFamily = family;
         currentPerson.family.push(family);
         break;
@@ -38,33 +40,23 @@ export function parseInput(input: string): Person[] {
 
       case "T": {
         const phone = buildPhone(values);
+
         if (!phone) {
           break;
         }
-        if (!currentPerson && !currentFamily) {
-          throw new Error("Invalid T record: missing parent person");
-        }
-        if (currentFamily) {
-          attachPhone(currentFamily, phone);
-        } else {
-          attachPhone(currentPerson!, phone);
-        }
+
+        assignValue(currentFamily ?? currentPerson, "phone", phone);
         break;
       }
 
       case "A": {
         const address = buildAddress(values);
+
         if (!address) {
           break;
         }
-        if (!currentPerson && !currentFamily) {
-          throw new Error("Invalid A record: missing parent person");
-        }
-        if (currentFamily) {
-          attachAddress(currentFamily, address);
-        } else {
-          attachAddress(currentPerson!, address);
-        }
+
+        assignValue(currentFamily ?? currentPerson, "address", address);
         break;
       }
     }
@@ -118,12 +110,12 @@ function buildAddress(values: string[]): Address | undefined {
   };
 }
 
-function attachPhone(target: Person | FamilyMember, phone: Phone): void {
-  target.phone = phone;
-}
+function assignValue(target: Person | FamilyMember | undefined, kind: "phone" | "address", value: Phone | Address): void {
+  if (!target) {
+    throw new Error(`Invalid ${kind === "phone" ? "T" : "A"} record: missing parent person`);
+  }
 
-function attachAddress(target: Person | FamilyMember, address: Address): void {
-  target.address = address;
+  target[kind] = value;
 }
 
 function isRecordType(value: string): value is RecordType {
