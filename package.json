@@ -7,6 +7,7 @@
     "typecheck": "npx tsc --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1"
+    "@types/node": "^25.9.1",
+    "prettier": "^3.8.3"
   }
 }
