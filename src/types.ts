@@ -1,3 +1,5 @@
+export type RecordType = "P" | "T" | "A" | "F";
+
 export interface Address {
   street?: string | undefined;
   city?: string | undefined;

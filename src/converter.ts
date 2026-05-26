@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { parseInput } from "./parser";
-import { buildXml } from "./xml";
+import { buildXml } from "./renderXlm";
 
 const DEFAULT_INPUT_PATH = path.join(process.cwd(), "src", "assets", "input.txt");
 const DEFAULT_OUTPUT_PATH = path.join(process.cwd(), "src", "assets", "output.xml");
