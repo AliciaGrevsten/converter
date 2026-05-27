@@ -1,4 +1,4 @@
-import { Address, FamilyMember, Person, Phone } from "./types";
+import { Address, FamilyMember, Person, Phone } from "../types";
 
 function escapeXml(value: string): string {
   return value

@@ -1,5 +1,4 @@
-import { Address, FamilyMember, Person, Phone, RecordType } from "./types";
-
+import { Address, FamilyMember, Person, Phone, RecordType } from "../types";
 
 export function parseInput(input: string): Person[] {
   const people: Person[] = [];
